@@ -1,0 +1,52 @@
+{% extends 'pos/base.html' %}
+
+
+    {% block content %}
+    <h1>Product List</h1>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Action</th>
+        </tr>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.name }}</td>
+            <td>Ksh. {{ product.price }}</td>
+            <td>{{ product.stock }}</td>
+            <td><a href="{% url 'pos_app:add_sale' product.id %}" class="button">Add Sale</a></td>
+            <!-- <td><a class="button" id="addbutton">Add Sale</a></td> -->
+            <p id="url">"{% url 'pos_app:add_sale' product.id %}"</p>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div>
+        <p> side cart </p>
+        <li>
+            item one
+        </li>
+        <p>total _</p>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <!-- <script>
+        $(function (){
+            $("#addbutton").click(function (){
+                console.log($('#url').text().replaceAll('"', ''))
+                $.ajax({
+                    url: 'add_sale/7',
+                    type: 'GET',
+                    dataType: 'json',
+                    beforeSend: function () {
+                        console.log('ajax')
+                    },
+                    success:function (data) {
+                        console.log(data)
+                    }
+                })
+            })
+        })
+    </script> -->
+    {% endblock %}

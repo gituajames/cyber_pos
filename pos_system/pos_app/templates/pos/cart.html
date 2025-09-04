@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYANDARUA ICT HUB POS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+    </style>
+</head>
+<body class="p-8">
+    <div class="max-w-7xl mx-auto bg-white rounded-lg shadow-xl p-8">
+        <h1 class="text-4xl font-extrabold text-center text-gray-800 mb-8">NYANDARUA ICT HUB POS</h1>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Product List Section -->
+            <div class="products-section">
+                <h2 class="text-3xl font-bold text-gray-700 mb-6">Products/Services</h2>
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for product in products %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ product.name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">ksh.{{ product.price|floatformat:2 }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <button 
+                                        data-product-id="{{ product.id }}"
+                                        class="add-to-cart-btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                        Add to Cart
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Shopping Cart Section -->
+            <div class="cart-section">
+                <h2 class="text-3xl font-bold text-gray-700 mb-6">Your Cart</h2>
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cart-items" class="bg-white divide-y divide-gray-200">
+                            {% for item in cart %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ item.name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <input type="number"
+                                           data-product-id="{{ item.id }}"
+                                           value="{{ item.quantity }}"
+                                           min="0"
+                                           class="quantity-input w-16 text-center border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">ksh.<span class="item-price">{{ item.price|floatformat:2 }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500 italic">Your cart is empty.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="mt-6 pt-4 border-t border-gray-200 flex justify-between items-center">
+                        <span class="text-lg font-bold text-gray-800">Total:</span>
+                        <span id="cart-total" class="text-lg font-bold text-gray-800">ksh {{ cart_total|floatformat:2 }}</span>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button id="checkout-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                        Checkout
+                    </button>
+                </div>
+                <div id="checkout-message" class="mt-4 p-4 rounded-lg text-center font-semibold hidden"></div>
+            </div>
+        </div>
+        
+        <hr class="my-12">
+
+        <!-- Sales History Section -->
+        <div class="sales-history-section">
+            <h2 class="text-3xl font-bold text-gray-700 mb-6">Sales History</h2>
+            <div class="bg-gray-50 rounded-lg p-6">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sale ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sales-history-items" class="bg-white divide-y divide-gray-200">
+                        {% for sale in sales_history %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ sale.id }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500">
+                                {% for item in sale.items %}
+                                    {{ item.name }} (x{{ item.quantity }})<br>
+                                {% endfor %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">ksh {{ sale.total|floatformat:2 }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ sale.date }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500 italic">No sales have been recorded yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+            const checkoutButton = document.getElementById('checkout-btn');
+            const cartItemsTable = document.getElementById('cart-items');
+            const cartTotalSpan = document.getElementById('cart-total');
+            const checkoutMessageDiv = document.getElementById('checkout-message');
+            const salesHistoryTable = document.getElementById('sales-history-items');
+
+            // Function to get the CSRF token from the cookie
+            function getCSRFToken() {
+                const name = 'csrftoken';
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+
+            // Event listener for adding items to the cart
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', async (event) => {
+                    const productId = event.target.dataset.productId;
+                    const csrfToken = getCSRFToken();
+                    
+                    try {
+                        const response = await fetch('/add_to_cart/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken
+                            },
+                            body: JSON.stringify({ product_id: productId })
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.success) {
+                                updateCartUI(data.cart, data.cart_total);
+                                hideMessage();
+                            } else {
+                                console.error('Error adding to cart:', data.error);
+                            }
+                        } else {
+                            console.error('Server error:', response.statusText);
+                        }
+                    } catch (error) {
+                        console.error('Network or fetch error:', error);
+                    }
+                });
+            });
+
+            // Event listener for checkout
+            checkoutButton.addEventListener('click', async () => {
+                const csrfToken = getCSRFToken();
+
+                try {
+                    const response = await fetch('/checkout/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        updateCartUI([], 0);
+                        updateSalesUI(data.sales_history);
+                        showMessage(data.message, 'bg-green-100 text-green-800');
+                    } else {
+                        showMessage(data.error, 'bg-red-100 text-red-800');
+                    }
+                } catch (error) {
+                    console.error('Network or fetch error:', error);
+                    showMessage('An unexpected error occurred.', 'bg-red-100 text-red-800');
+                }
+            });
+
+            // Event listener for updating quantity in the cart
+            cartItemsTable.addEventListener('input', async (event) => {
+                if (event.target.classList.contains('quantity-input')) {
+                    const productId = event.target.dataset.productId;
+                    const newQuantity = event.target.value;
+                    const csrfToken = getCSRFToken();
+
+                    try {
+                        const response = await fetch('/update_cart_quantity/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken
+                            },
+                            body: JSON.stringify({ product_id: productId, quantity: newQuantity })
+                        });
+
+                        const data = await response.json();
+                        if (data.success) {
+                            updateCartUI(data.cart, data.cart_total);
+                        } else {
+                            console.error('Error updating quantity:', data.error);
+                        }
+                    } catch (error) {
+                        console.error('Network or fetch error:', error);
+                    }
+                }
+            });
+
+            function updateCartUI(cartData, cartTotal) {
+                cartItemsTable.innerHTML = ''; // Clear existing cart items
+
+                if (cartData.length === 0) {
+                    cartItemsTable.innerHTML = `<tr><td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500 italic">Your cart is empty.</td></tr>`;
+                } else {
+                    cartData.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.classList.add('hover:bg-gray-50');
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <input type="number"
+                                       data-product-id="${item.id}"
+                                       value="${item.quantity}"
+                                       min="0"
+                                       class="quantity-input w-16 text-center border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">ksh.<span class="item-price">${(item.price * item.quantity).toFixed(2)}</span></td>
+                        `;
+                        cartItemsTable.appendChild(row);
+                    });
+                }
+                
+                cartTotalSpan.textContent = `ksh ${cartTotal.toFixed(2)}`;
+            }
+
+            function updateSalesUI(salesData) {
+                salesHistoryTable.innerHTML = '';
+                if (salesData.length === 0) {
+                    salesHistoryTable.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500 italic">No sales have been recorded yet.</td></tr>`;
+                } else {
+                    salesData.forEach(sale => {
+                        const row = document.createElement('tr');
+                        row.classList.add('hover:bg-gray-50');
+                        let itemsHtml = '';
+                        sale.items.forEach(item => {
+                            itemsHtml += `${item.name} (x${item.quantity})<br>`;
+                        });
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${sale.id}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500">${itemsHtml}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">ksh ${sale.total.toFixed(2)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${sale.date}</td>
+                        `;
+                        salesHistoryTable.appendChild(row);
+                    });
+                }
+            }
+
+            function showMessage(message, classes) {
+                checkoutMessageDiv.textContent = message;
+                checkoutMessageDiv.className = `mt-4 p-4 rounded-lg text-center font-semibold ${classes}`;
+                checkoutMessageDiv.style.display = 'block';
+            }
+
+            function hideMessage() {
+                checkoutMessageDiv.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

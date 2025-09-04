@@ -1,0 +1,88 @@
+/* Add your custom styles here */
+
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: white; 
+    /* background-image: url("../pos/images/background.jpg"); */
+
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #c11919;
+}
+
+th {
+    background-color: #127aeb;
+}
+
+tr:hover {
+    background-color: whitesmoke;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #f44444;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.button {
+    background-color: #07055d;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #dd4d78;
+}
+
+
+
+  nav ul {
+    list-style: none; /* Removes bullet points */
+    margin: 0;
+    padding: 0;
+    display: flex; /* Arranges the list items horizontally */
+    justify-content: center; /* Centers the navigation links */
+  }
+  
+  nav li a {
+    display: block; /* Makes the entire link area clickable */
+    padding: 10px 15px; /* Adds space around the text */
+    text-decoration: none; /* Removes the underline from links */
+    color: #333; /* Default text color (a dark grey) */
+    transition: color 0.3s ease; /* Smooth transition for color change */
+  }
+  
+  nav li a:hover {
+    color: #007bff; /* Color of the text on hover (a bright blue) */
+  }

@@ -1,0 +1,12 @@
+{% extends 'pos/base.html' %}
+{% block content %}
+        <div class="receipt">
+            <h1>Sales Receipt</h1>
+            <p>Product: {{ sale.product.name }}</p>
+            <p>Quantity: {{ sale.quantity|default_if_none:"0" }}</p>
+            <p>Price per unit: ${{ sale.product.price }}</p>
+            <p>Total: ${{ total_price }}</p>
+            <p>Date: {{ sale.date }}</p>
+            <button onclick="window.print()" class="button">Print</button>
+        </div>
+{% endblock %}
