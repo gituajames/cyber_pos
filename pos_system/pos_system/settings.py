@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-l0xnizvjjz2ol1m5&d1-sockj)9tstmf2zqqy8imo!$l+)c3nv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*' 'https//:cyber.nyandaruaicthub.co.ke', 'cyber.nyandaruaicthub.co.ke']
+ALLOWED_HOSTS = ['*' 'https://cyber.nyandaruaicthub.co.ke', 'cyber.nyandaruaicthub.co.ke', 
+'http://cyber.nyandaruaicthub.co.ke']
 
 
 # Application definition
